@@ -1,0 +1,366 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+
+{% block contents %}
+	<!-- Event Detail Masterhead -->
+	<section id="et-event-masthead" class="container-fluid position-relative img-overlay no-hover" style="background-image: url('{{ event.featured_image.url }}');">
+		<div class="container position-relative">
+			<div class="mb-rev d-md-flex align-items-end">
+				<div class="col-lg-5 col-md-6 col-sm-12">
+					<div class="event-intro shadow bg-white">
+						<h1 class="mb-4">{{ event.title }} &nbsp;<i class="fas fa-check-circle text-green"></i></h1>
+
+						<div class="info">
+							<div class="h6"><i class="icon-clock text-primary"></i>&nbsp; {{ event.start_date|date:"M d" }} - {{ event.end_date|date:"M d" }}</div>
+							<div class="text-primary"><i class="icon-phone"></i>&nbsp; {{ event.phone }}</div>
+						</div>
+
+						<div class="time-left my-3 pt-2 pt-md-0" end_date = "{{ event.end_date_js_format }}">
+							<div class="timer">
+								<div class="days"></div>
+								<div class="hours"></div>
+								<div class="minutes"></div>
+								<div class="seconds"></div>
+							</div>
+						</div>
+
+						<div class='rating-widget mt-3'>
+							<div class="star-rating d-inline-block mr-3">
+								{% for i in event.get_stars %}
+								<i class="fa fa-star {% if i %}checked{% endif %} align-middle"></i>
+								{% endfor %}
+							</div>
+							<span class="badge badge-primary pointer position-absolute">{{ event.calc_rating }}</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-7 col-md-6 col-sm-12 d-flex mb-2 flex-wrap pt-md-0 pt-3 align-items-end">
+					<div class="align-items-md-end align-items-center flex-fill text-center d-sm-flex">
+						<div class="event-features text-white">
+
+							<div><span class="circle-icon text-primary bg-white"><i class="icon-eye"></i></span>{{ event.views }} views</div>
+							<div><span class="circle-icon text-primary bg-white"><i class="fas fa-ticket-alt"></i></span>Spots Left: {{ event.seats }}</div>
+							<div><span class="circle-icon bg-green"><i class="fas fa-check text-white"></i></span>{{ event.status }}</div>
+						</div>
+						<div class="event-actions ml-auto">
+							<a href="{% url 'events:save-event' event.uid %}" class="badge badge-green pointer" data-toggle="tooltip" data-placement="top" title="Save event"><i class="icon-heart"></i></a>
+						</div>
+					</div>
+					<div class="mt-5 w-100 d-none d-md-block align-items-center justify-content-between" style="display: flex !important;">
+						<p class="event-location d-inline-block m-0 bg-white p-2"><i class="icon-compass h3 align-middle"></i>&nbsp; {{ event.location|truncatechars:30 }}</p>
+						<a target="_blank" href="https://www.google.com/maps/place/{{ event.location }}/" class="float-right text-decoration-none text-primary">Get Directions <i class="fas fa-external-link-alt"></i></a>
+					</div>
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			<br>
+		</div>
+	</section>
+
+
+	<!-- Content Area -->
+	<section id="et-content" class="container-fluid">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8">
+					<div id="scroll-tabs" class="scroll-tabs bg-light">
+						<a class="nav-link d-inline-block bg-transparent rounded-0 text-reset p-3" id="scrollto-top" href="#et-event-masthead">All</a>
+						<a class="nav-link d-inline-block bg-transparent rounded-0 text-reset p-3" id="scrollto-description" href="#data-description">Description</a>
+						<a class="nav-link d-inline-block bg-transparent rounded-0 text-reset p-3" id="scrollto-description" href="#data-organizer">Organizer</a>
+						<a class="nav-link d-inline-block bg-transparent rounded-0 text-reset p-3" id="scrollto-gallery" href="#data-gallery">Gallery</a>
+						<a class="nav-link d-inline-block bg-transparent rounded-0 text-reset p-3" id="scrollto-reviews" href="#data-reviews">Reviews</a>
+					</div>
+
+					<!-- Description -->
+					<div id="data-description" class="event-description shadow rounded p-5 content-box mt-5">
+						<h4 class="mb-4 font-weight-bold">Description</h4>
+						<p class="description mb-0">{{ event.description | safe }}</p>
+					</div>
+
+					<div id="data-organizer" class="side-widget w-100 map shadow rounded p-5 mt-5">
+						<h4 id="map_direction" class="box-heading mb-5 position-relative mb-0">Organizer</h4>
+
+						<div class="mb-3">
+							<img style="width: 70px; height: 70px; object-fit: cover;" src="{% if event.get_organizer_logo %}{{ event.get_organizer_logo }}{% else %}{% static 'img/author-1.jpg' %}{% endif %}" class="rounded-pill shadow d-inline-block" alt="author">
+							<div class="d-inline-block position-relative align-middle pl-2">
+								<a href="{% url 'events:organizer-events' event.user.profile.uid %}"><span class="text-primary">{{ event.organizer }}</span></a>
+								<p>{{ event.phone }}</p>
+
+							</div>
+						</div>
+
+						<label>Social media: </label>
+						<ul class="social d-inline-block m-0 nostyle inline p-0">
+							<li><a href="{{ event.facebook }}" class="d-flex align-items-center justify-content-center border text-decoration-none transition"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
+							<li><a href="{{ event.twitter }}" class="d-flex align-items-center justify-content-center border text-decoration-none transition"><i class="fab fa-twitter" aria-hidden="true"></i></a></li>
+							<li><a href="{{ event.instagram }}" class="d-flex align-items-center justify-content-center border text-decoration-none transition"><i class="fab fa-instagram" aria-hidden="true"></i></a></li>
+						</ul>
+						<hr>
+						<label>Website: </label> <a href="{{ event.get_website_link }}" class="text-primary text-decoration-none" style="word-break: break-word;">{{ event.get_website }} <i class="fas fa-external-link-alt"></i></a>
+					</div>
+
+					<!-- Gallery -->
+					{% if gallery.count > 0 %}
+					<div id="data-gallery" class="gallery-mason shadow rounded p-5 content-box mt-5">
+						<h4 class="mb-4 font-weight-bold">Gallery</h4>
+						<i class="icon-download prev pointer"></i>
+						<i class="icon-download next pointer"></i>
+						<div class="mason-container">
+							{% for i in gallery %}
+							<div class="image-box"><img src="{{ i.image.url }}" alt="img"></div>
+							{% endfor %}
+						</div>
+					</div>
+					{% endif %}
+
+					<!-- Customer Reviews -->
+					<div id="data-reviews" class="event-reviews shadow rounded p-5 content-box mt-5">
+						<h4 class="mb-4 font-weight-bold">Reviews</h4>
+						<!-- Comments -->
+						<div class="post-comments">
+							{% for review in reviews %}
+							<!-- Comment -->
+							<div class="user-comment border-bottom pb-1 mb-3">
+								<div class="d-md-flex d-sm-block mb-2">
+									<div class="commenter-thumbnail">
+										<img src="{% static 'img/userthumb.jpg' %}" alt="comment" class="img-fluid rounded-pill">
+									</div>
+									<div class="comment-content">
+										<h6>{{ review.user.profile.full_name }} - <span class="text-muted review-date small">{{ review.created }}</span> <i class="report-comment ml-3 pointer float-right text-muted fa fa-flag" data-toggle="tooltip" data-placement="top" title="Report"></i> <i class="reply-trigger pointer float-right text-muted fa fa-reply" data-toggle="tooltip" data-placement="top" title="Reply"></i></h6>
+										<div class="star-rating d-inline-block mb-2">
+											{% for i in review.get_stars %}
+											<i class="fa fa-star {% if i %}checked{% endif %} align-middle"></i>
+											{% endfor %}
+										</div>
+										<p class="description">{{ review.comment }}</p>
+										<div class="product-shots lightbox">
+											{% for x in review.reviewimage_set.all %}
+											<a href="{{ x.image.url }}" blank='_' title="Caption for gallery item {{ forloop.counter }}">
+												<img src="{{ x.image.url }}" width="50" alt="img" class="img-fluid mb-2 mr-2">
+											</a>
+											{% endfor %}
+										</div>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+							<!-- /Comment -->
+							<!-- <a href="#" class="d-block text-center text-primary">View More</a> -->
+
+							{% if reviews.count == 0 %}
+							<h4>No reviews yet</h4>
+							{% endif %}
+						</div>
+						<!-- /Comments -->
+					</div>
+
+					{% if request.user.is_authenticated %}
+					<div class="event-comment-form shadow rounded p-5 content-box mt-5">
+						<h4 class="mb-4 font-weight-bold">Add Review</h4>
+						<div class="post-comment-form">
+							<form id="review_form" autocomplete="off" method='post' enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="row">
+									<div class="form-group col-md-12 col-sm-12">
+										<div class="fake-file-upload rounded-pill transition-1 d-flex align-items-center justify-content-center p-3 text-center text-muted position-relative">
+											<input type="file" name="images" class="position-absolute pointer" multiple>
+											<i class="fas fa-cloud-upload-alt h3 m-0"></i>&nbsp; Choose images
+										</div>
+									</div>
+									<div class="form-group col-md-g col-sm-12 mt-3">
+										<input type="number" name='stars' hidden>
+										<label for="">Rate this event:</label>
+										<div class='rating-stars' id="review_ratings">
+											<ul id='stars' class="d-inline-block">
+												<li class='star' title='Poor' data-value='1'>
+													<i class='fa fa-star fa-fw'></i>
+												</li>
+												<li class='star' title='Fair' data-value='2'>
+													<i class='fa fa-star fa-fw'></i>
+												</li>
+												<li class='star' title='Good' data-value='3'>
+													<i class='fa fa-star fa-fw'></i>
+												</li>
+												<li class='star' title='Excellent' data-value='4'>
+													<i class='fa fa-star fa-fw'></i>
+												</li>
+												<li class='star' title='WOW!!!' data-value='5'>
+													<i class='fa fa-star fa-fw'></i>
+												</li>
+											</ul>
+										</div>
+									</div>
+									<!-- <div class="form-group col-md-6 col-sm-12">
+										<input type="text" class="form-control bg-light" placeholder="Name" name="name">
+									</div>
+									<div class="form-group col-md-6 col-sm-12">
+										<input type="text" class="form-control bg-light" placeholder="Email address" name="email">
+									</div> -->
+									<div class="form-group col-sm-12">
+										<textarea required rows="6" class="form-control resize-none bg-light" placeholder="Type your comment" name="comment"></textarea>
+									</div>
+								</div>
+
+								<div class="position-relative border-0 mt-md-0 mt-3 btn btn-primary submit-btn">
+									<i class="icon-login btn-icon input-icon"></i> Submit Review
+									<input id="review_submit" type="submit" class="h-100 w-100 position-absolute" value="Submit">
+								</div>
+							</form>
+						</div>
+						<!-- /Comment form -->
+					</div>
+					{% endif %}
+				</div>
+
+				<div class="col-lg-4">
+					<div class="et-sidebar">
+
+						<!-- Amenities -->
+						<div class="side-widget w-100 amenities shadow rounded p-4 mt-5">
+							<h4 class="box-heading mb-5 position-relative mb-0">Amenities</h4>
+							<ul class="p-0 m-0 nostyle">
+								{% for i in event.all_amenities %}
+									{% if i.avail %}
+									<li class="mb-4 mt-2"><i class="fas fa-{{ i.icon }} text-primary"></i>&nbsp; {{ i.name }} <i class="text-green mt-1 fas fa-check float-right"></i></li>
+									{% else %}
+									<li class="mb-4 mt-2"><i class="fas fa-{{ i.icon }} text-primary"></i>&nbsp; {{ i.name }} <i class="text-primary mt-1 fas fa-times float-right"></i></li>
+									{% endif %}
+								{% endfor %}
+							</ul>
+						</div>
+
+
+
+						<!-- Get a seat -->
+						<div class="side-widget w-100 reservation shadow rounded p-4 mt-5">
+							<h4 class="box-heading mb-5 position-relative mb-0">Register to event</h4>
+
+							<p class="text-primary">Event Price: <span class="text-secondary">{{ event.price_val }}</span></p>
+
+							<p class="text-primary"><i class="fas fa-exclamation-triangle"></i> Only <span class="text-secondary">{{ event.seats }}</span> spots left</p>
+
+							<form autocomplete="off" method="POST">
+								{% csrf_token %}
+
+								{% for i in ticket_errors %}
+									<small class="text-danger mb-2">{{ i }}</small>
+								{% endfor %}
+
+								{{ event.populate_information_fields }}
+
+								<div class="form-group text-center">
+									<p><strong>Total:</strong> <span class="text-primary" id="ticket-total">{{event.price_val}}</span></p>
+								</div>
+								<div class="text-center">
+									<div class="position-relative border-0 mt-md-0 mt-3 btn btn-primary submit-btn">
+										<i class="fas fa-credit-card btn-icon input-icon"></i> Register your team
+										<input name='submit' type="submit" class="h-100 w-100 position-absolute" value="buy_ticket">
+									</div>
+								</div>
+							</form>
+						</div>
+
+						<!-- General enquiry -->
+						<div class="side-widget w-100 enquiry shadow rounded p-4 mt-5">
+							<h4 class="box-heading mb-5 position-relative mb-0">General enquiry</h4>
+							<form method="POST" autocomplete="off">
+								{% csrf_token %}
+								<div class="form-group">
+									<input type="text" class="form-control bg-light" placeholder="Name" name="name" value="{% if contact.name.value %}{{ contact.name.value }}{% endif %}">
+
+									{% for i in contact.name.errors %}
+										<small class="text-danger">{{ i }}</small>
+									{% endfor %}
+								</div>
+								<div class="form-group">
+									<input required type="text" class="form-control bg-light" placeholder="Email address" name="email" value="{% if contact.email.value %}{{ contact.email.value }}{% endif %}">
+
+									{% for i in contact.email.errors %}
+										<small class="text-danger">{{ i }}</small>
+									{% endfor %}
+								</div>
+								<div class="form-group">
+									<input type="text" class="form-control bg-light" placeholder="Phone" name="phone" value="{% if contact.phone.value %}{{ contact.phone.value }}{% endif %}">
+
+									{% for i in contact.phone.errors %}
+										<small class="text-danger">{{ i }}</small>
+									{% endfor %}
+								</div>
+								<div class="form-group">
+									<textarea required name="message" class="form-control bg-light" placeholder="Your message" rows="6" cols="80">{% if contact.message.value %}{{ contact.message.value }}{% endif %}</textarea>
+
+									{% for i in contact.message.errors %}
+										<small class="text-danger">{{ i }}</small>
+									{% endfor %}
+								</div>
+								<div class="text-center">
+									<div class="position-relative border-0 mt-md-0 mt-3 btn btn-primary submit-btn">
+										<i class="icon-login btn-icon input-icon"></i> Submit
+										<input name="submit" type="submit" class="h-100 w-100 position-absolute" value="enquiry">
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="container-fluid pt-0 position-relative">
+		<iframe src="https://www.stay22.com/embed/gm?aid=bonspielsnet&lat={{ event.lat }}&lng={{ event.lon }}&maincolor=FF0000" id="stay22-widget" width="100%" height="460" frameborder="0"></iframe>
+	</section>
+
+
+	<!-- Trip advisor -->
+	<section id="et-related-events" class="container-fluid pt-0 position-relative trip-addy" trips="{% url 'events:trip-advisor' %}" event_uid="{{ event.uid }}">
+		<div class="section-heading">
+			<p>Places near to Event Location.</p>
+			<br>
+			<h2 class="mb-0">Places from TripAdvisor</h2>
+		</div>
+		<div class="owl-carousel owl-theme">
+			<h3 class="text-center">Loading Places Nearby</h3>
+		</div>
+	</section>
+	
+
+	<!-- Related Events -->
+	<section id="et-related-events" class="container-fluid pt-0 position-relative">
+		<div class="section-heading">
+			<p>Here are some of Related Events for you.</p>
+			<br>
+			<h2 class="mb-0">Related events</h2>
+		</div>
+		<div class="owl-carousel owl-theme">
+			{% for i in related_events %}
+			<div class="item pt-25 pb-25">
+				<div class="event-grid shadow">
+					<div class="image-wrap img-overlay">
+						<a href="{% url 'events:save-event' i.uid %}" class="badge badge-primary like pointer position-absolute"><i class="icon-heart"></i></a>
+
+						<span class="badge badge-secondary photocount position-absolute"><i class="icon-photo"></i> {{ i.gallery_set.count }}</span>
+						<img src="{{ i.featured_image.url }}" alt="img" class="img-fluid">
+
+						<span class="badge badge-primary region_loc position-absolute">{{ i.category.name }}</a>
+					</div>
+					<div class="content p-4">
+						<h4 class="mb-3"><a href="{% url 'events:event-detail' event.slug %}" class="text-decoration-none text-reset">{{ i.title }}</a></h4>
+						<p><i class="icon-clock align-middle text-primary"></i>&nbsp; {{ i.start_date|date:"d M" }} - {{ i.end_date|date:"d M" }}</p>
+						<div class="d-flex event-actions">
+							<span style="font-size: .8rem;" class="event-action pointer" data-toggle="tooltip" data-placement="bottom" title="{{ event.location }}">{{ event.location }}</span>
+							<span class="event-action pointer" data-toggle="tooltip" data-placement="bottom" title="{{ event.price_text }}">{{ i.price_val }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+		{% if related_events.count == 0 %}
+		<h3 class="text-center">No related events</h3>
+		{% endif %}
+	</section>
+	
+	{% include 'mainapp/auth_modals.html' %}
+{% endblock contents %}

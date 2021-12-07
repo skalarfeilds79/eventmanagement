@@ -1,0 +1,426 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+
+{% block contents %}
+	<!-- Home Masterhead -->
+	<section id="et-masthead-3" class="container-fluid">
+		<div class="container position-relative h-100 pt-5" style="z-index: 2;">
+			
+			<div class="masthead-caption text-center">
+				{% for i in bgs_hero %}
+				<h1 class="text-white d-lg-block d-none position-relative z-index-2">{{i.title}}</h1>
+
+				<h2 class="mb-3 text-white"><span class="text-primary text-white"></span> {{i.subtitle}}</h2>
+				{% endfor %}
+				<div class="grid-categories mb-3 mb-md-0">
+					{% for i in loc_icons %}
+
+						<div class="position-relative mb-5">
+							<a href="{% url 'events:event-search' %}?search-input={{ i.name }}&search=Submit">
+								<img src="{{ i.image.url }}" alt="">
+							</a>
+							<h4 class="iconx-title-b">{{ i.get_name }}</h4>
+						</div>
+						
+					{% endfor %}
+				</div>
+
+				<!-- ********************removing searchbar ***************************** -->
+
+				<!-- <form action="{% url 'events:event-search' %}" autocomplete="off" class="d-md-flex align-items-center justify-content-center mt-4">
+					<div class="form-group m-1 position-relative">
+						<input id="search-tcd" list='title_list' name='search-tcd' type="text" class="form-control" placeholder="Title / Region / Description">
+
+						<datalist id='title_list'>
+						</datalist>
+					</div>
+
+					<div class="position-relative border-0 btn btn-primary submit-btn">
+						<i class="icon-search-2 btn-icon input-icon"></i> Discover Now
+						<input name='search' type="submit" class="h-100 w-100 position-absolute" value="Discover Now">
+					</div>
+				</form> -->
+			</div>
+		</div>
+
+		<!-- <div class="slider-outer">
+			<div class="slider">
+				
+			</div> -->
+		</div>
+		<!-- newslider -->
+		
+		<div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-indicators">
+			  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+			  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+			  <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+			</div>
+			<div class="carousel-inner">
+				{% for i in bgs_hero %}
+			  <div class="carousel-item active">
+				
+				<div class="slide-item"><span class="slide-image" style="background-image: url('{{ i.image.url }}');"></span></div>
+				
+			  </div>
+			  {% endfor %}}
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+			  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			  <span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+			  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			  <span class="visually-hidden">Next</span>
+			</button>
+		  </div>
+
+		<div id="xx-usb-d">
+			
+		</div>
+	</section>
+
+	
+
+	<!-- Lising Events -->
+	<section id="et-related-events" class="container-fluid position-relative">
+		<div class="section-heading">
+			<p>Lorem ipsum dolor emet</p>
+			<br>
+			<h2 class="mb-0">Listing Events</h2>
+		</div>
+		<div class="owl-carousel owl-theme">
+			{% for event in events %}
+			<div class="item pt-25 pb-25">
+				<div class="event-grid shadow">
+					<div class="image-wrap img-overlay">
+						<a href="{% url 'events:save-event' event.uid %}" class="badge badge-primary like pointer position-absolute"><i class="icon-heart"></i></a>
+						<span class="badge badge-secondary photocount position-absolute"><i class="icon-photo"></i> {{ event.gallery_set.count }}</span>
+						<img src="{{ event.featured_image.url }}" alt="img" class="img-fluid">
+
+						<span class="badge badge-primary region_loc position-absolute">{{ event.category.name }}</a>
+					</div>
+					<div class="content p-4">
+						<h4 class="mb-3"><a href="{% url 'events:event-detail' event.slug %}" class="text-decoration-none text-reset">{{ event.title }}</a></h4>
+						<p class="description">{{event.description | safe |truncatechars:50}}</p>
+						
+						<div class="info">
+							
+							<div class="h6"><i class="icon-clock text-primary"></i>&nbsp; {{ event.start_date|date:"M d" }} - {{ event.end_date|date:"M d" }}</div>
+							<div class="text-primary"><i class="icon-phone"></i>&nbsp; {{ event.phone }}</div>
+						</div>
+						<div class="d-flex event-actions">
+							<span style="font-size: .8rem;" class="event-action pointer" data-toggle="tooltip" data-placement="bottom" title="{{ event.location }}">{{ event.location }}</span>
+							<span class="event-action pointer" data-toggle="tooltip" data-placement="bottom" title="{{ event.price_text }}">{{ event.price_val }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</section>
+
+	<!-- Events by Location -->
+	<section id="et-location-events" class="container-fluid bg-light">
+		<div class="container">
+			<div class="section-heading">
+				<p>Events happening Different Cities</p>
+				<br>
+				<h2 class="mb-0">Events by Location</h2>
+			</div>
+
+			<!-- Events by Location -->
+			<div class="event-results pl-4 pr-md-4">
+
+				<div class="splide">
+					<div class="splide__track">
+						<ul class="splide__list">
+							{% for loc_list in location_page_list %}
+							<div class="row grid-view splide__slide">
+								{% for loc in loc_list %}
+								<div class="col-md-6 mt-3 mb-3">
+									<div class="blog-grid w-100 mt-4 rounded shadow">
+										{% with loc.get_events as l_events %}
+											<div class="image-wrap img-overlay position-relative" style="height: 350px;">
+												<span class="badge badge-primary listings photocount position-absolute">{{ loc.count_listings }} Listings</span>
+												<img src="{{ loc.image.url }}" alt="img" class="img-fluid rounded-top location_page_img">
+												<h3 class="mb-4 fixed-bottom pl-4 title text-white font-weight-bold position-absolute">{{ loc.name.capitalize }}</h3>
+											</div>
+											<div style="min-height: 400px;" class="content-slides bg-white">
+												{% if l_events.count == 0 %}
+													<h2 class="no_listing_text">No listings here yet</h2>
+												{% else %}
+													<div class="owl-carousel owl-theme">
+														{% for i in l_events %}
+															<div class="content w-100 item p-4">
+																<span class="text-muted"><i class="icon-clock text-primary"></i> &nbsp;Posted {{ i.days_since_created }}</span>
+																<span class="text-primary float-right" data-toggle="tooltip" data-placement="bottom" title="{{ i.price_text }}">{{ i.price_val }}</span>
+																<hr>
+																<h4 class="mb-3"><a href="{% url 'events:event-detail' i.slug %}" class="text-decoration-none text-reset">{{ i.title }}</h4></a>
+																<p class="description">
+																	{{ i.description | safe | truncatechars:30}}
+																</p>
+																<div class="info">
+																	<div class="mb-2"><i class="icon-clock"></i>&nbsp; {{ i.end_date|date:"d M, Y" }}</div>
+																	<div class="mb-2"><i class="icon-contact"></i>&nbsp; {{ i.email }}</div>
+																	<div class="text-secondary"><i class="icon-phone"></i>&nbsp; {{ i.phone }}</div>
+																</div>
+																<hr>
+																<div class="time-left mt-4 d-inline-block pt-2 pt-md-0" end_date="{{ i.end_date_js_format }}">
+																	<div class="timer search">
+																		<div class="days"></div>
+																		<div class="hours text-primary-flat"></div>
+																		<div class="minutes text-secondary-flat"></div>
+																		<div class="seconds"></div>
+																	</div>
+																</div>
+																<a href="{% url 'events:add-calendar' i.uid %}" style="width: 150px;" class="position-relative float-right border-0 mt-3 btn btn-primary btn-small submit-btn">
+																	<i class="icon-calendar btn-icon input-icon"></i> Register
+																	<input class='mover' href="{% url 'events:event-detail' i.slug %}" type="submit" class="h-100 w-100 position-absolute" value="Discover Now">
+																</a>
+															</div>
+														{% endfor %}
+													</div>
+												{% endif %}
+											</div>
+										{% endwith %}
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+
+				<div class="splide_btns">
+					<button id="splide_prev"><i class="fas fa-angle-left"></i></button>
+					<button id="splide_next"><i class="fas fa-angle-right"></i></button>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<!-- Call to action -->
+
+	<section id="et-cta-1" class="container-fluid position-relative bg-primary">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-7 mt-5 mt-md-0">
+					<h3 class="box-heading mb-5 position-relative mb-0 text-white">Why us?</h3>
+					<div class="info-row pt-5 d-flex text-white">
+						<i class="icon-calendar bg-white rounded shadow p-3 text-primary h2 mr-3 align-self-baseline"></i>
+						<div>
+							<span class="h5 d-inline-block">Find events around you</span>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+					<div class="info-row pt-5 d-flex text-white">
+						<i class="icon-testing bg-white rounded shadow p-3 text-primary h2 mr-3 align-self-baseline"></i>
+						<div>
+							<span class="h5 d-inline-block">Contact the organizers</span>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+					<div class="info-row pt-5 d-flex text-white">
+						<i class="icon-hotel bg-white rounded shadow p-3 text-primary h2 mr-3 align-self-baseline"></i>
+						<div>
+							<span class="h5 d-inline-block">Reserve a seat</span>
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+					<a href="#" class="btn bg-white mt-5 shadow border-0"><i class="fas fa-angle-double-right btn-icon"></i> Read More</a>
+				</div>
+				<div class="col-md-5">
+					<div class="image-cluster position-relative">
+						<div class="img img-overlay position-absolute bg-white overflow-hidden rounded shadow"><img src="{% static 'img/clust-1.jpg' %}" alt="img"></div>
+						<div class="img img-overlay position-absolute bg-white overflow-hidden rounded shadow"><img src="{% static 'img/clust-2.jpg' %}" alt="img"></div>
+						<div class="img img-overlay position-absolute bg-white overflow-hidden rounded shadow"><img src="{% static 'img/clust-3.jpg' %}" alt="img"></div>
+						<div class="img img-overlay position-absolute bg-white overflow-hidden rounded shadow"><img src="{% static 'img/clust-4.jpg' %}" alt="img"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Pricing Area -->
+
+
+	<!-- Testimonial -->
+
+	<section id="et-testimonial" class="container-fluid bg-light">
+		<div class="container">
+			<div class="section-heading">
+				<p>Here is Feedback From Customers</p>
+				<br>
+				<h2 class="mb-0">Words from Users</h2>
+			</div>
+			<div class="owl-carousel owl-theme">
+				<div class="item bg-white shadow p-5 m-4">
+					<i class="icon-quote-2 text-secondary h1"></i>
+					<p class="mb-0 font-italic description">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+					<div class="d-flex align-items-center mt-4">
+						<div class="thumb-wrap shadow mr-4 d-inline-block">
+							<img src="{% static 'img/author-1.jpg' %}" class="img-fluid" alt="user">
+						</div>
+						<div>
+							<h4>Steve Guzlemian</h4>
+							<small>Manager at UXF</small>
+						</div>
+					</div>
+				</div>
+				<div class="item bg-white shadow p-5 m-4">
+					<i class="icon-quote-2 text-secondary h1"></i>
+					<p class="mb-0 font-italic description">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+					<div class="d-flex align-items-center mt-4">
+						<div class="thumb-wrap shadow mr-4 d-inline-block">
+							<img src="{% static 'img/author-2.jpg' %}" class="img-fluid" alt="user">
+						</div>
+						<div>
+							<h4>Steve Guzlemian</h4>
+							<small>Manager at UXF</small>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Featured and Upcoming Events -->
+
+	<section class="container-fluid bg-light">
+		<div class="row m-0">
+			<!-- Featured Events -->
+			<div class="featured-events col-lg-6">
+				<h4 class="box-heading mb-5 ml-3 position-relative mb-0">Featured Events</h4>
+
+				{% if featured_events.count > 0 %}
+				<div class="owl-carousel owl-theme">
+					<!-- Item -->
+					<div class="item p-3">
+						{% for i in featured_events %}
+						<div class="shadow mb-3 bg-white">
+							<div class="row align-items-center">
+								<div class="col-sm-4 pr-md-0">
+									<div class="img-wrapper position-relative">
+										<img src="{{ i.featured_image.url }}" alt="img">
+										<a href="{% url 'events:save-event' i.uid %}" class="badge badge-secondary photocount pointer position-absolute"><i class="icon-heart"></i></a>
+									</div>
+								</div>
+								<div class="col-sm-8 pl-md-0">
+									<div class="content-box p-3">
+										<h5 class="d-inline-block"><a href="{% url 'events:event-detail' i.slug %}" class="text-decoration-none text-reset"> {{ i.title }}</a></h5>
+
+										<small class="float-right"><i class="icon-clock text-primary"></i>&nbsp; {{ i.start_date|date:"d M, Y" }} - {{ i.end_date|date:"d M, Y" }}</small>
+
+										<p class="description">{{ i.description | safe | truncatechars:30}}</p>
+										<small class="tm">Time left</small>
+										<hr>
+										<div class="time-left mt-2 d-inline-block pt-2 pt-md-0" end_date="{{ i.end_date_js_format }}">
+											<div class="timer search">
+												<div class="days"></div>
+												<div class="hours text-primary-flat"></div>
+												<div class="minutes text-secondary-flat"></div>
+												<div class="seconds"></div>
+											</div>
+										</div>
+										<a href="{% url 'events:add-calendar' i.uid %}" class="position-relative border-0 btn btn-primary btn-small transform-origin-right float-right submit-btn">
+											<i class="icon-calendar btn-icon input-icon"></i> Register
+											<input type="submit" class="h-100 w-100 position-absolute" value="Discover Now">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				{% else %}
+					<h3 class="ml-3">No Featured events</h3>
+				{% endif %}
+			</div>
+
+			<!-- Upcoming Events -->
+			<div class="featured-events col-lg-6">
+				<h4 class="box-heading mb-5 ml-3 position-relative mb-0">Upcoming Events</h4>
+
+				{% if upcoming_events.count > 0 %}
+				<div class="owl-carousel owl-theme">
+					<!-- Item -->
+					<div class="item p-3">
+						{% for i in upcoming_events %}
+						<div class="shadow mb-3 bg-white">
+							<div class="row align-items-center">
+								<div class="col-sm-4 pr-md-0">
+									<div class="img-wrapper position-relative">
+										<img src="{{ i.featured_image.url }}" alt="img">
+										<a href="{% url 'events:save-event' i.uid %}" class="badge badge-secondary photocount pointer position-absolute"><i class="icon-heart"></i></a>
+									</div>
+								</div>
+								<div class="col-sm-8 pl-md-0">
+									<div class="content-box p-3">
+										<h5 class="d-inline-block"><a href="{% url 'events:event-detail' i.slug %}" class="text-decoration-none text-reset"> {{ i.title }}</a></h5>
+										
+										<small class="float-right"><i class="icon-clock text-primary"></i>&nbsp; {{ i.start_date|date:"d M, Y" }} - {{ i.end_date|date:"d M, Y" }}</small>
+
+
+										<p class="description">{{ i.description | safe | truncatechars:30}}</p>
+										<small class="tm">Time left</small>
+										<hr>
+										<div class="time-left mt-2 d-inline-block pt-2 pt-md-0" end_date="{{ i.end_date_js_format }}">
+											<div class="timer search">
+												<div class="days"></div>
+												<div class="hours text-primary-flat"></div>
+												<div class="minutes text-secondary-flat"></div>
+												<div class="seconds"></div>
+											</div>
+										</div>
+										<a href="{% url 'events:add-calendar' i.uid %}" class="position-relative border-0 btn btn-primary btn-small transform-origin-right float-right submit-btn">
+											<i class="icon-calendar btn-icon input-icon"></i> Register
+											<input type="submit" class="h-100 w-100 position-absolute" value="Discover Now">
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+				</div>
+				{% else %}
+					<h3 class="ml-3">No Upcoming events</h3>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+
+	<!-- Latest News -->
+	<section id="et-latest-news" class="container-fluid mt-5">
+		<div class="section-heading">
+			<p>Blog posts listed here with all types</p>
+			<br>
+			<h2 class="mb-0">Latest News</h2>
+		</div>
+		<div id="news_carousel" class="owl-carousel owl-theme" news="{% url 'mainapp:facebook_url' %}" author_img = "{% static 'img/event-grid-1.jpg' %}">
+
+			<h3 class="text-center my-4">Loading Bonspiels News</h3>
+
+		</div>
+	</section>
+
+	<!-- Clients -->
+	<section id="et-clients-home">
+		<div class="container">
+			<div class="d-flex flex-wrap justify-content-center client-icons">
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-1.png' %}" class="img-fluid" alt="client"></span>
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-2.png' %}" class="img-fluid" alt="client"></span>
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-3.png' %}" class="img-fluid" alt="client"></span>
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-4.png' %}" class="img-fluid" alt="client"></span>
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-5.png' %}" class="img-fluid" alt="client"></span>
+				<span class="m-3 rounded transition"><img src="{% static 'img/client-6.png' %}" class="img-fluid" alt="client"></span>
+			</div>
+		</div>
+	</section>
+
+	{% include 'mainapp/auth_modals.html' %}
+{% endblock contents %}

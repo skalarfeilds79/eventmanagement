@@ -1,0 +1,63 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+
+{% block contents %}
+	<!-- Page Header -->
+	<section id="et-pagehead" class="container-fluid text-center text-white img-overlay no-hover position-relative pt-5 pb-5">
+		<div class="container position-relative pt-5 pb-5 mt-5 mb-5">
+			<h1 class="box-heading mb-5 position-relative mb-0 text-white">Ticket Orders</h1>
+		</div>
+		<div class="breadcrumb position-absolute text-center m-0 justify-content-center bg-transparent text-white">
+			<a href="#" class="text-white d-inline-block p-2">Home</a>
+			<a href="#" class="text-white d-inline-block p-2">Events</a>
+			<a href="#" class="text-white d-inline-block p-2">Event Calendar</a>
+		</div>
+	</section>
+
+	<!-- Filter -->
+	<div id="et-filter-row" class="container-fluid pt-3 pb-3 bg-primary text-white">
+		<div class="container">
+			<div class="d-flex align-items-center">
+				<div class="d-flex mb-3 mb-sm-0 align-items-center">
+					<h5 class="small m-0 pr-2 d-none d-md-block text-white">Ticket orders:</h5> <p class="small m-0 text-white"> ({{ tickets.count }})</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Content section -->
+	<section id="et-calendar-area" class="container-fluid pt-4">
+		<div class="container">
+			<div class="row justify-content-center">
+
+				<!-- Listing Result -->
+                {% for i in tickets %}
+				<div class="col-md-5 my-5 mt-md-0">
+					<div class=" scrollbar-inner bg-white shadow overflow-auto">
+						
+						<div class="event ticket-box p-3 d-block text-decoration-none text-reset">
+							<h4 class="d-inline-block"><a href="{% url 'events:event-detail' i.event.slug %}" class="text-dark">{{ i.event.title.capitalize }}</a></h4>
+							<span class="pl-3"><i class="icon-clock text-primary"></i> Starts {{ i.event.start_date|date:"d M, Y"}}</span>
+							
+							<p class="mt-2 mb-0"><strong class="mr-3">Amount:</strong> {{ i.event.get_currency_symbol }}{{ i.get_amount }}</p>
+							<p class="mt-2 mb-0"><strong class="mr-3">Status:</strong> <span class="badge badge-primary">{{ i.get_status }}</span></p>
+
+							<div class="actions">
+								<a href="{% url 'events:order-ticket' i.uid %}" class="position-relative border-0 mt-3 btn btn-primary btn-small submit-btn pr-3">
+									<i class="icon-download btn-icon input-icon"></i> Download Reciept
+								</a>
+								<a href="" class="position-relative border-0 mt-3 btn btn-danger btn-small submit-btn pr-3">
+									<i class="fas fa-trash-alt btn-icon input-icon"></i> Remove
+								</a>
+							</div>
+						</div>
+						
+					</div>
+				</div>
+                {% endfor %}
+			</div>
+		</div>
+	</section>
+
+	{% include 'mainapp/auth_modals.html' %}
+{% endblock %}

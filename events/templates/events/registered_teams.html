@@ -1,0 +1,81 @@
+{% extends "mainapp/base.html" %}
+{% load static %}
+{% load mytags %}
+
+{% block contents %}
+	<!-- Page Header -->
+	<section id="et-pagehead" class="container-fluid text-center text-white img-overlay no-hover position-relative pt-5 pb-5">
+		<div class="container position-relative pt-5 pb-5 mt-5 mb-5">
+			<h1 class="box-heading mb-5 position-relative mb-0 text-white">Registered Teams</h1>
+		</div>
+		<div class="breadcrumb position-absolute text-center m-0 justify-content-center bg-transparent text-white">
+			<a href="/" class="text-white d-inline-block p-2">Home</a>
+			<a href="{% url 'account:profile'%}" class="text-white d-inline-block p-2">Profile</a>
+			<a href="" class="text-white d-inline-block p-2">Registered Teams</a>
+		</div>
+	</section>
+
+	<!-- Filter -->
+	<div id="et-filter-row" class="container-fluid pt-3 pb-3 bg-primary text-white">
+		<div class="container">
+			<div class="d-flex align-items-center">
+				<div class="d-flex mb-3 mb-sm-0 align-items-center">
+					<h5 class="small m-0 pr-2 d-none d-md-block text-white">Registered Teams:</h5> <p class="small m-0 text-white"> ({{ tickets.count }})</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Content section -->
+	<section id="et-calendar-area" class="container-fluid pt-4">
+		<div class="container">
+			<div class="row justify-content-center">
+
+				<!-- Listing Result -->
+                {% for event in events %}
+
+	                
+						<div class="col-md-7 my-5 mt-md-0">
+							<div class=" scrollbar-inner bg-white shadow overflow-auto">
+								
+								<div class="event ticket-box d-block text-decoration-none text-reset registered-team-box">
+									
+									<div class="d-flex p-3 head-x">
+										<h3 class="mr-auto"><a href="{% url 'events:event-detail' event.slug %}" class="text-dark">{{ event.title.capitalize }}</a></h3>
+										<span class="pl-3"><i class="icon-clock text-white"></i> {{ event.start_date|date:"d M"}} - {{ event.end_date|date:"d M"}}</span>
+									</div>
+									
+									<div class="tickets-cont">
+										{% for i in event.userticket_set.all %}
+											{% if i.information %}
+												<div class="pt-3 reg_list_item" paid="{{ i.is_paid }}">
+													{% return_html i.get_info_dict %}
+												</div>
+											{% endif %}
+										{% endfor %}
+									</div>
+
+									{% if not event.userticket_set.all %}
+										<div class="p-3">
+											<h3>No Registered Teams</h3>
+										</div>
+									{% else %}
+										<!-- <div class="p-3 d-flex align-items-center">
+											<p>Filter by: </p>
+											<p>Paid <input type="radio" name="radx-{{ event.id }}" class="payment_radio" value="paid"></p>
+											<p>Not Paid <input type="radio" name="radx-{{ event.id }}" class="payment_radio" value="not_paid"></p>
+										</div> -->
+									{% endif %}
+								</div>
+								
+							</div>
+						</div>
+					
+
+                {% endfor %}
+			</div>
+		</div>
+	</section>
+
+	{% include 'mainapp/auth_modals.html' %}
+{% endblock %}
